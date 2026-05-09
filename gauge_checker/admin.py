@@ -58,15 +58,15 @@ class GaugeAdminForm(forms.ModelForm):
 class GaugeAdmin(admin.ModelAdmin):
     form = GaugeAdminForm
     list_display = [
-        "date_calibrated",
-        "type",
-        "date_installed",
-        "created",
         "serial",
+        "type",
+        "state",
+        "date_calibrated",
+        "date_installed",
+        "date_expire",
+        "created",
         "last_updated",
         "last_consumed",
-        "date_expire",
-        "state",
         "comments",
     ]
     readonly_fields = [

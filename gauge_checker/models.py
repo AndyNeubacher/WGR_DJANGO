@@ -57,7 +57,7 @@ class Gauge(models.Model):
 
     # Relationships
     Contact = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="gauges")
-    Measurements = models.ForeignKey("gauge_checker.Measurement", on_delete=models.CASCADE, related_name="gauges")
+    Measurements = models.ForeignKey("gauge_checker.Measurement", on_delete=models.CASCADE, related_name="gauges", null=True, blank=True)
 
     # Fields
     date_calibrated = models.DateField()

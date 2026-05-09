@@ -47,13 +47,13 @@ class GaugeForm(forms.ModelForm):
     class Meta:
         model = models.Gauge
         fields = [
-            "date_calibrated",
-            "type",
-            "date_installed",
             "serial",
-            "last_consumed",
-            "date_expire",
+            "type",
             "state",
+            "date_calibrated",
+            "date_installed",
+            "date_expire",
+            "last_consumed",
             "comments",
             "Contact",
             "Measurements",
