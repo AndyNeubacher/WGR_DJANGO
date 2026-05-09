@@ -1,0 +1,28 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+<p>
+    <a class="btn btn-light" href="{% url 'gauge_checker_Gauge_list' %}">
+    Gauge Listing
+    </a>
+</p>
+    
+<table class="table">
+    <tr><td>date_calibrated</td><td>{{ object.date_calibrated }}</td></tr>
+    <tr><td>type</td><td>{{ object.type }}</td></tr>
+    <tr><td>date_installed</td><td>{{ object.date_installed }}</td></tr>
+    <tr><td>created</td><td>{{ object.created }}</td></tr>
+    <tr><td>serial</td><td>{{ object.serial }}</td></tr>
+    <tr><td>last_updated</td><td>{{ object.last_updated }}</td></tr>
+    <tr><td>last_consumed</td><td>{{ object.last_consumed }}</td></tr>
+    <tr><td>date_expire</td><td>{{ object.date_expire }}</td></tr>
+    <tr><td>state</td><td>{{ object.state }}</td></tr>
+    <tr><td>comments</td><td>{{ object.comments }}</td></tr>
+    <tr><td>Contact</td><td>{{ object.Contact }}</td></tr>
+    <tr><td>Measurements</td><td>{{ object.Measurements }}</td></tr>
+</table>
+<a class="btn btn-primary" href="{{object.get_update_url}}">Edit</a>
+
+{% endblock %}

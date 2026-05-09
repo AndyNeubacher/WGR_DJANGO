@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="m-2"><h4>gauge_checker</h4></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Contact_list' %}">Contact Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Customer_list' %}">Customer Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Gauge_list' %}">Gauge Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Group_list' %}">Group Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Images_list' %}">Images Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Location_list' %}">Location Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Measurement_list' %}">Measurement Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Site_list' %}">Site Listing</a></div>
+<div class="m-2"><a class="btn btn-light" href="{% url 'gauge_checker_Technican_list' %}">Technican Listing</a></div>
+{% endblock %}

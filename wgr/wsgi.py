@@ -1,16 +1,16 @@
 """
-WSGI config for wgr project.
+WSGI config for WGR.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
+https://docs.djangoproject.com/
 """
 
 import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wgr.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'WGR.settings')
 
 application = get_wsgi_application()

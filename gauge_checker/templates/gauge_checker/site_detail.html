@@ -1,0 +1,23 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+<p>
+    <a class="btn btn-light" href="{% url 'gauge_checker_Site_list' %}">
+    Site Listing
+    </a>
+</p>
+    
+<table class="table">
+    <tr><td>created</td><td>{{ object.created }}</td></tr>
+    <tr><td>last_updated</td><td>{{ object.last_updated }}</td></tr>
+    <tr><td>address</td><td>{{ object.address }}</td></tr>
+    <tr><td>comments</td><td>{{ object.comments }}</td></tr>
+    <tr><td>Location</td><td>{{ object.Location }}</td></tr>
+    <tr><td>Gauges</td><td>{{ object.Gauges }}</td></tr>
+    <tr><td>Group</td><td>{{ object.Group }}</td></tr>
+</table>
+<a class="btn btn-primary" href="{{object.get_update_url}}">Edit</a>
+
+{% endblock %}

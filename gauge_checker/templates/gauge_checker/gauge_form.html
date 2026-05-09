@@ -1,0 +1,86 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    
+<p>
+    <a class="btn btn-light" href="{% url 'gauge_checker_Gauge_list' %}">
+    Gauge Listing
+    </a>
+</p>
+    
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{form.errors}}
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="date_calibrated">date_calibrated: </label>
+      <input class="form-control col-sm-10"
+         id="date_calibrated" type="date"
+         name="date_calibrated" value="{{ object.date_calibrated }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="type">type: </label>
+      <input class="form-control col-sm-10"
+         id="type" type="text"
+         name="type" value="{{ object.type }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="date_installed">date_installed: </label>
+      <input class="form-control col-sm-10"
+         id="date_installed" type="date"
+         name="date_installed" value="{{ object.date_installed }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="created">created: </label>
+      <input class="form-control col-sm-10"
+         id="created" type="datetime-local"
+         name="created" value="{{ object.created }}" disabled>
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="serial">serial: </label>
+      <input class="form-control col-sm-10"
+         id="serial" type="text"
+         name="serial" value="{{ object.serial }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="last_updated">last_updated: </label>
+      <input class="form-control col-sm-10"
+         id="last_updated" type="datetime-local"
+         name="last_updated" value="{{ object.last_updated }}" disabled>
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="last_consumed">last_consumed: </label>
+      <input class="form-control col-sm-10"
+         id="last_consumed" type="number"
+         name="last_consumed" value="{{ object.last_consumed }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="date_expire">date_expire: </label>
+      <input class="form-control col-sm-10"
+         id="date_expire" type="date"
+         name="date_expire" value="{{ object.date_expire }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="state">state: </label>
+      <input class="form-control col-sm-10"
+         id="state" type="text"
+         name="state" value="{{ object.state }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="comments">comments: </label>
+      <input class="form-control col-sm-10"
+         id="comments" type="text"
+         name="comments" value="{{ object.comments }}">
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="Contact">Contact: </label>
+      {{ form.Contact }}
+  </div>
+  <div class="form-group row">
+      <label class="col-sm-2 col-form-label" for="Measurements">Measurements: </label>
+      {{ form.Measurements }}
+  </div>
+  <input type="submit" value="Save" class="btn btn-primary">
+</form>
+
+{% endblock %}
