@@ -192,7 +192,7 @@ class Site(models.Model):
     # Relationships
     Location = models.ForeignKey("gauge_checker.Location", on_delete=models.CASCADE, related_name="sites", null=True, blank=True)
     Gauges = models.ForeignKey("gauge_checker.Gauge", on_delete=models.CASCADE, related_name="sites", null=True, blank=True)
-    Group = models.OneToOneField("auth.Group", on_delete=models.CASCADE, related_name="site", null=True, blank=True)
+    Group = models.ForeignKey("auth.Group", on_delete=models.CASCADE, related_name="sites", null=True, blank=True)
 
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)

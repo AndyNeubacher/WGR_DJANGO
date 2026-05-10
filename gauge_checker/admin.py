@@ -38,6 +38,8 @@ class CustomerAdminForm(forms.ModelForm):
 class CustomerAdmin(admin.ModelAdmin):
     form = CustomerAdminForm
     list_display = [
+        "Name",
+        "PropertyManagement",
         "last_updated",
         "comments",
         "created",
