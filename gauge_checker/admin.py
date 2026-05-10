@@ -14,13 +14,13 @@ class ContactAdminForm(forms.ModelForm):
 class ContactAdmin(admin.ModelAdmin):
     form = ContactAdminForm
     list_display = [
-        "email",
         "name",
+        "address",
+        "telephone",
+        "email",
         "comments",
         "created",
-        "telephone",
         "last_updated",
-        "address",
     ]
     readonly_fields = [
         "created",
@@ -85,9 +85,9 @@ class GroupAdminForm(forms.ModelForm):
 class GroupAdmin(admin.ModelAdmin):
     form = GroupAdminForm
     list_display = [
+        "name",
         "created",
         "last_updated",
-        "name",
         "comments",
     ]
     readonly_fields = [
@@ -126,10 +126,11 @@ class LocationAdminForm(forms.ModelForm):
 class LocationAdmin(admin.ModelAdmin):
     form = LocationAdminForm
     list_display = [
-        "last_updated",
+        "address",
         "longitude",
-        "created",
         "latitude",
+        "last_updated",
+        "created",
     ]
     readonly_fields = [
         "last_updated",
@@ -148,10 +149,10 @@ class MeasurementAdmin(admin.ModelAdmin):
     form = MeasurementAdminForm
     list_display = [
         "date_measured",
-        "last_updated",
-        "comments",
-        "created",
         "consumed",
+        "comments",
+        "last_updated",
+        "created",
     ]
     readonly_fields = [
         "last_updated",
@@ -169,10 +170,10 @@ class SiteAdminForm(forms.ModelForm):
 class SiteAdmin(admin.ModelAdmin):
     form = SiteAdminForm
     list_display = [
-        "created",
-        "last_updated",
         "address",
         "comments",
+        "created",
+        "last_updated",
     ]
     readonly_fields = [
         "created",
@@ -190,6 +191,7 @@ class TechnicanAdminForm(forms.ModelForm):
 class TechnicanAdmin(admin.ModelAdmin):
     form = TechnicanAdminForm
     list_display = [
+        "Name",
         "created",
         "last_updated",
     ]

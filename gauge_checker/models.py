@@ -5,16 +5,17 @@ from django.urls import reverse
 class Contact(models.Model):
 
     # Fields
-    email = models.EmailField()
-    name = models.CharField(max_length=100)
-    comments = models.TextField(blank=True)
+    email = models.EmailField(null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    comments = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    telephone = models.CharField(max_length=100)
+    telephone = models.CharField(max_length=100, null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    address = models.CharField(max_length=255)
+    address = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
-        pass
+        verbose_name = "Kontakt"
+        verbose_name_plural = "Kontakte"
 
     def __str__(self):
         return str(self.name)
@@ -30,17 +31,18 @@ class Contact(models.Model):
 class Customer(models.Model):
 
     # Relationships
-    Sites = models.ForeignKey("gauge_checker.Site", on_delete=models.CASCADE, related_name="customers_by_site")
-    Name = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="customers_by_name")
-    PropertyManagement = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="customers_by_property_management")
+    Sites = models.ForeignKey("gauge_checker.Site", on_delete=models.CASCADE, related_name="customers_by_site", null=True, blank=True)
+    Name = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="customers_by_name", null=True, blank=True)
+    PropertyManagement = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="customers_by_property_management", null=True, blank=True)
 
     # Fields
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    comments = models.TextField(blank=True)
+    comments = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, editable=False)
 
     class Meta:
-        pass
+        verbose_name = "Mitglied"
+        verbose_name_plural = "Mitglieder"
 
     def __str__(self):
         return str(self.pk)
@@ -56,23 +58,24 @@ class Customer(models.Model):
 class Gauge(models.Model):
 
     # Relationships
-    Contact = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="gauges")
+    Contact = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="gauges", null=True, blank=True)
     Measurements = models.ForeignKey("gauge_checker.Measurement", on_delete=models.CASCADE, related_name="gauges", null=True, blank=True)
 
     # Fields
-    date_calibrated = models.DateField()
-    type = models.CharField(max_length=100)
-    date_installed = models.DateField()
+    date_calibrated = models.DateField(null=True, blank=True)
+    type = models.CharField(max_length=100, null=True, blank=True)
+    date_installed = models.DateField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    serial = models.CharField(max_length=100)
+    serial = models.CharField(max_length=100, null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    last_consumed = models.IntegerField()
-    date_expire = models.DateField()
-    state = models.CharField(max_length=100)
-    comments = models.TextField(blank=True)
+    last_consumed = models.IntegerField(null=True, blank=True)
+    date_expire = models.DateField(null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    comments = models.TextField(blank=True, null=True)
 
     class Meta:
-        pass
+        verbose_name = "Wasserzähler"
+        verbose_name_plural = "Wasserzähler"
 
     def __str__(self):
         return str(self.pk)
@@ -90,11 +93,12 @@ class Group(models.Model):
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    name = models.CharField(max_length=100)
-    comments = models.TextField(blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
+    comments = models.TextField(blank=True, null=True)
 
     class Meta:
-        pass
+        verbose_name = "Gebiet"
+        verbose_name_plural = "Gebiete"
 
     def __str__(self):
         return str(self.name)
@@ -110,15 +114,16 @@ class Group(models.Model):
 class Images(models.Model):
 
     # Relationships
-    Location = models.ForeignKey("gauge_checker.Location", on_delete=models.CASCADE, related_name="images")
+    Location = models.ForeignKey("gauge_checker.Location", on_delete=models.CASCADE, related_name="images", null=True, blank=True)
 
     # Fields
-    image = models.ImageField(upload_to="upload/images/")
+    image = models.ImageField(upload_to="upload/images/", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
-        pass
+        verbose_name = "Bild"
+        verbose_name_plural = "Bilder"
 
     def __str__(self):
         return str(self.pk)
@@ -135,12 +140,14 @@ class Location(models.Model):
 
     # Fields
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    longitude = models.FloatField()
+    longitude = models.FloatField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    latitude = models.FloatField()
+    latitude = models.FloatField(null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
-        pass
+        verbose_name = "Standort"
+        verbose_name_plural = "Standorte"
 
     def __str__(self):
         return str(self.pk)
@@ -156,17 +163,18 @@ class Location(models.Model):
 class Measurement(models.Model):
 
     # Relationships
-    Images = models.ForeignKey("gauge_checker.Images", on_delete=models.CASCADE, related_name="measurements")
+    Images = models.ForeignKey("gauge_checker.Images", on_delete=models.CASCADE, related_name="measurements", null=True, blank=True)
 
     # Fields
-    date_measured = models.DateField()
+    date_measured = models.DateField(null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    comments = models.TextField(blank=True)
+    comments = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, editable=False)
-    consumed = models.IntegerField()
+    consumed = models.IntegerField(null=True, blank=True)
 
     class Meta:
-        pass
+        verbose_name = "Messung"
+        verbose_name_plural = "Messungen"
 
     def __str__(self):
         return str(self.pk)
@@ -182,18 +190,19 @@ class Measurement(models.Model):
 class Site(models.Model):
 
     # Relationships
-    Location = models.ForeignKey("gauge_checker.Location", on_delete=models.CASCADE, related_name="sites")
-    Gauges = models.ForeignKey("gauge_checker.Gauge", on_delete=models.CASCADE, related_name="sites")
-    Group = models.OneToOneField("auth.Group", on_delete=models.CASCADE, related_name="site")
+    Location = models.ForeignKey("gauge_checker.Location", on_delete=models.CASCADE, related_name="sites", null=True, blank=True)
+    Gauges = models.ForeignKey("gauge_checker.Gauge", on_delete=models.CASCADE, related_name="sites", null=True, blank=True)
+    Group = models.OneToOneField("auth.Group", on_delete=models.CASCADE, related_name="site", null=True, blank=True)
 
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
-    address = models.CharField(max_length=255)
-    comments = models.TextField(blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+    comments = models.TextField(blank=True, null=True)
 
     class Meta:
-        pass
+        verbose_name = "Installation"
+        verbose_name_plural = "Installationen"
 
     def __str__(self):
         return str(self.pk)
@@ -209,14 +218,15 @@ class Site(models.Model):
 class Technican(models.Model):
 
     # Relationships
-    Name = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="technicans")
+    Name = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="technicans", null=True, blank=True)
 
     # Fields
     created = models.DateTimeField(auto_now_add=True, editable=False)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
 
     class Meta:
-        pass
+        verbose_name = "Techniker"
+        verbose_name_plural = "Techniker"
 
     def __str__(self):
         return str(self.pk)
