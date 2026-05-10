@@ -5,8 +5,10 @@
 {% if show_ocr_review and ocr_results %}
   <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
     <h5>OCR-Ergebnisse erkannt</h5>
-    <p>Die folgenden Werte wurden automatisch aus dem Bild extrahiert. Bitte überprüfen Sie sie und korrigieren Sie bei Bedarf.</p>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <p class="mb-0">Die folgenden Werte wurden automatisch aus dem Bild extrahiert. Bitte überprüfen Sie sie und korrigieren Sie bei Bedarf.</p>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Schließen">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 {% endif %}
 
@@ -36,8 +38,8 @@
             <div class="mt-2">
               <img id="image-preview" src="#" alt="Vorschau" style="display: none; max-width: 100%; max-height: 300px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />
             </div>
-            <div id="ocr-loading" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
-              <span class="visually-hidden">OCR wird ausgeführt...</span>
+            <div id="ocr-loading" class="spinner-border spinner-border-sm ml-2 d-none" role="status">
+              <span class="sr-only">OCR wird ausgeführt...</span>
             </div>
             {% if form.image.errors %}
               <div class="alert alert-danger mt-2">{{ form.image.errors }}</div>

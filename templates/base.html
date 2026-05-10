@@ -1,35 +1,127 @@
 {% load static %}
-<html>
+<!DOCTYPE html>
+<html lang="de">
   <head>
-    <title>Django Builder - WGR</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f9fa">
+    <title>WGR - Wasserzähler</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <style>
+      /* === Mobile-friendly base overrides === */
+      html { -webkit-text-size-adjust: 100%; }
+      body { font-size: 16px; }
+      img, iframe, video { max-width: 100%; height: auto; }
+
+      /* Prevent iOS auto-zoom on input focus (any input below 16px triggers it) */
+      input.form-control, select.form-control, textarea.form-control,
+      input[type="text"], input[type="number"], input[type="email"],
+      input[type="password"], input[type="date"], input[type="datetime-local"],
+      input[type="search"], input[type="tel"], input[type="url"], textarea, select {
+        font-size: 16px;
+      }
+
+      /* Larger tap targets for actions */
+      .btn { min-height: 44px; }
+      .navbar .btn { min-height: 38px; }
+      .table-responsive { -webkit-overflow-scrolling: touch; }
+
+      /* Content rhythm */
+      #content.container { padding-top: 1rem; padding-bottom: 2rem; }
+
+      /* On phones, stacked form rows need spacing between label and input */
+      @media (max-width: 575.98px) {
+        h1, .h1 { font-size: 1.6rem; }
+        h2, .h2 { font-size: 1.35rem; }
+        h3, .h3 { font-size: 1.2rem; }
+        h4, .h4 { font-size: 1.1rem; }
+        h5, .h5 { font-size: 1.02rem; }
+        h6, .h6 { font-size: 0.95rem; }
+
+        #content.container { padding-left: 12px; padding-right: 12px; }
+        .card-body { padding: 0.9rem 0.85rem; }
+        .card-header { padding: 0.6rem 0.85rem; }
+
+        /* form-group row: stack label+input cleanly */
+        .form-group.row { margin-left: 0; margin-right: 0; }
+        .form-group.row > [class*="col-"] { padding-left: 0; padding-right: 0; }
+        .form-group .col-form-label { padding-bottom: 0.25rem; font-weight: 600; }
+
+        /* Stack action buttons (form submit + cancel etc.) */
+        .form-group .btn,
+        .form-group .btn + .btn,
+        .form-group .btn + a.btn {
+          display: block;
+          width: 100%;
+          margin-top: 0.5rem;
+        }
+        .form-group .btn:first-child { margin-top: 0; }
+
+        /* Tables tighter */
+        .table th, .table td { padding: 0.5rem 0.45rem; font-size: 0.92rem; }
+
+        /* Pagination wrap */
+        .pagination { flex-wrap: wrap; gap: 0.25rem; }
+        .pagination .page-link { padding: 0.45rem 0.7rem; }
+
+        /* Definition lists in detail views: stack instead of row */
+        dl.row > dt, dl.row > dd { padding-left: 0; padding-right: 0; }
+        dl.row > dt { margin-top: 0.4rem; }
+        dl.row > dd { margin-bottom: 0.2rem; }
+
+        /* Avoid horizontal overflow from long words/serials */
+        .card-body, .card-text, dd, td { word-break: break-word; overflow-wrap: anywhere; }
+      }
+
+      /* Small tablets — keep buttons full-width inside cards */
+      @media (max-width: 767.98px) {
+        .navbar .btn { width: auto; }
+        .btn-lg { min-height: 48px; }
+      }
+    </style>
 
     {% block extrahead %}{% endblock %}
   </head>
   <body>
     {% block allcontent %}
-    <nav class="navbar navbar-light bg-light mb-3">
-      <a class="navbar-brand" href="{% url 'index' %}">WGR</a>
-      <div>
-        {% if user.is_authenticated %}
-          <span class="mr-3">{{ user.username }}</span>
-          <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}">Abmelden</a>
-        {% else %}
-          <a class="btn btn-sm btn-primary" href="{% url 'login' %}">Anmelden</a>
-        {% endif %}
+    <nav class="navbar navbar-expand-md navbar-light bg-light mb-3">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'index' %}">WGR</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Menü öffnen/schließen">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ml-auto align-items-md-center">
+            {% if user.is_authenticated %}
+              <li class="nav-item"><span class="nav-link text-muted">{{ user.username }}</span></li>
+              <li class="nav-item">
+                <a class="btn btn-sm btn-outline-secondary mt-2 mt-md-0 ml-md-2" href="{% url 'logout' %}">Abmelden</a>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="btn btn-sm btn-primary mt-2 mt-md-0" href="{% url 'login' %}">Anmelden</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
       </div>
     </nav>
     <div id="content" class="container">
       <h2>Home: <a href="{% url 'index' %}">WGR</a></h2>
       <div class="card">
         <div class="card-body">
-
-          <p class="card-text">{% block content %}{% endblock %}</p>
+          {% block content %}{% endblock %}
         </div>
       </div>
     </div>
-
     {% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    {% block extrascripts %}{% endblock %}
   </body>
 </html>
