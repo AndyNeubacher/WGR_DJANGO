@@ -54,11 +54,12 @@
           <div class="form-group">
             <label for="{{ form.serial_number.id_for_label }}">{{ form.serial_number.label }}</label>
             {{ form.serial_number }}
-            {% if show_ocr_review and ocr_results.serial_number %}
-              <small class="form-text text-success">OCR-Ergebnis erkannt - bitte überprüfen</small>
-            {% else %}
-              <small class="form-text text-muted">Optional: Wird durch OCR automatisch erkannt</small>
-            {% endif %}
+            <small class="form-text text-muted">
+              {% if gauge.serial %}
+                Aktuell: <strong>{{ gauge.serial }}</strong> |
+              {% endif %}
+              Wird durch OCR automatisch erkannt
+            </small>
             {% if form.serial_number.errors %}
               <div class="alert alert-danger mt-2">{{ form.serial_number.errors }}</div>
             {% endif %}
@@ -75,11 +76,12 @@
           <div class="form-group">
             <label for="{{ form.consumed.id_for_label }}">{{ form.consumed.label }}</label>
             {{ form.consumed }}
-            {% if show_ocr_review and ocr_results.consumed_volume %}
-              <small class="form-text text-success">OCR-Ergebnis erkannt - bitte überprüfen</small>
-            {% else %}
-              <small class="form-text text-muted">Geben Sie den Zählerstand in Kubikmetern (m³) ein</small>
-            {% endif %}
+            <small class="form-text text-muted">
+              {% if gauge.last_consumed %}
+                Letzter Wert: <strong>{{ gauge.last_consumed }} m³</strong> |
+              {% endif %}
+              Wird durch OCR automatisch erkannt
+            </small>
             {% if form.consumed.errors %}
               <div class="alert alert-danger mt-2">{{ form.consumed.errors }}</div>
             {% endif %}
@@ -132,55 +134,139 @@
 </div>
 
 <script>
-document.getElementById('{{ form.image.id_for_label }}').addEventListener('change', function(e) {
-  const fileInput = e.target;
-  const file = fileInput.files[0];
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+  const imageInput = document.querySelector('input[name="image"]');
 
-  if (!file) return;
+  if (!imageInput) {
+    console.error('Image input field not found!');
+    return;
+  }
 
-  const formData = new FormData();
-  formData.append('image', file);
+  imageInput.addEventListener('change', function(e) {
+    const fileInput = e.target;
+    const file = fileInput.files[0];
 
-  const loadingSpinner = document.getElementById('ocr-loading');
-  const resultsContainer = document.getElementById('ocr-results-container');
+    if (!file) return;
 
-  // Show loading spinner
-  loadingSpinner.classList.remove('d-none');
-  resultsContainer.style.display = 'none';
+    console.log('Selected file:', file.name);
 
-  // Call OCR endpoint
-  fetch("{% url 'technician_ocr' %}", {
-    method: 'POST',
-    body: formData,
-    headers: {
-      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const loadingSpinner = document.getElementById('ocr-loading');
+    const resultsContainer = document.getElementById('ocr-results-container');
+
+    // Show loading spinner
+    if (loadingSpinner) {
+      loadingSpinner.classList.remove('d-none');
     }
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Hide loading spinner
-    loadingSpinner.classList.add('d-none');
-
-    // Update form fields with OCR results
-    if (data.serial_number) {
-      document.getElementById('{{ form.serial_number.id_for_label }}').value = data.serial_number;
-      document.getElementById('ocr-serial-number').textContent = data.serial_number;
+    if (resultsContainer) {
+      resultsContainer.style.display = 'none';
     }
 
-    if (data.consumed_volume) {
-      document.getElementById('{{ form.consumed.id_for_label }}').value = data.consumed_volume;
-      document.getElementById('ocr-consumed-volume').textContent = data.consumed_volume;
-    }
+    // Call OCR endpoint
+    fetch("{% url 'technician_ocr' %}", {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+      }
+    })
+    .then(response => {
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('OCR Response data:', data);
 
-    // Show results container if we have results
-    if (data.serial_number || data.consumed_volume) {
-      resultsContainer.style.display = 'block';
-    }
-  })
-  .catch(error => {
-    loadingSpinner.classList.add('d-none');
-    console.error('OCR Error:', error);
-    alert('Fehler bei OCR-Verarbeitung: ' + error);
+      // Hide loading spinner
+      if (loadingSpinner) {
+        loadingSpinner.classList.add('d-none');
+      }
+
+      // Always show results container
+      if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+      }
+
+      // Get form field references
+      const serialNumberField = document.querySelector('input[name="serial_number"]');
+      const consumedField = document.querySelector('input[name="consumed"]');
+      const dateMeasuredField = document.querySelector('input[name="date_measured"]');
+      const displaySerialNumber = document.getElementById('ocr-serial-number');
+      const displayConsumedVolume = document.getElementById('ocr-consumed-volume');
+
+      console.log('Serial field found:', !!serialNumberField);
+      console.log('Consumed field found:', !!consumedField);
+      console.log('Date field found:', !!dateMeasuredField);
+
+      // Update serial number
+      if (data.serial_number && data.serial_number !== null && data.serial_number !== 'None' && String(data.serial_number).trim() !== '') {
+        if (serialNumberField) {
+          serialNumberField.value = data.serial_number;
+          console.log('Set serial_number to:', data.serial_number);
+        }
+        if (displaySerialNumber) {
+          displaySerialNumber.textContent = data.serial_number;
+        }
+      } else {
+        if (displaySerialNumber) {
+          displaySerialNumber.textContent = '(nicht erkannt)';
+        }
+      }
+
+      // Update consumed volume
+      if (data.consumed_volume && data.consumed_volume !== null && data.consumed_volume !== 'None' && String(data.consumed_volume).trim() !== '') {
+        if (consumedField) {
+          consumedField.value = data.consumed_volume;
+          console.log('Set consumed to:', data.consumed_volume);
+        }
+        if (displayConsumedVolume) {
+          displayConsumedVolume.textContent = data.consumed_volume;
+        }
+      } else {
+        if (displayConsumedVolume) {
+          displayConsumedVolume.textContent = '(nicht erkannt)';
+        }
+      }
+
+      // Update date measured from image EXIF
+      if (data.date_measured && data.date_measured !== null && String(data.date_measured).trim() !== '') {
+        if (dateMeasuredField) {
+          dateMeasuredField.value = data.date_measured;
+          console.log('Set date_measured to:', data.date_measured);
+        }
+      }
+
+      if (data.error) {
+        console.error('OCR Error from server:', data.error);
+        alert('OCR Fehler: ' + data.error);
+      }
+    })
+    .catch(error => {
+      if (loadingSpinner) {
+        loadingSpinner.classList.add('d-none');
+      }
+      if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+      }
+      console.error('OCR Error:', error);
+
+      const displaySerialNumber = document.getElementById('ocr-serial-number');
+      const displayConsumedVolume = document.getElementById('ocr-consumed-volume');
+      if (displaySerialNumber) {
+        displaySerialNumber.textContent = 'Fehler';
+      }
+      if (displayConsumedVolume) {
+        displayConsumedVolume.textContent = 'Fehler';
+      }
+
+      alert('Fehler bei OCR-Verarbeitung: ' + error);
+    });
   });
 });
 </script>

@@ -127,14 +127,40 @@ def barcode_robust_decode(image: np.ndarray) -> list:
     return results
 
 
+def extract_image_date(image_path: str) -> Optional[str]:
+    """
+    Extract date from image EXIF metadata.
+    Returns date string in YYYY-MM-DD format, or None if not found.
+    """
+    try:
+        from PIL import Image
+        from PIL.ExifTags import TAGS
+
+        image = Image.open(image_path)
+        exif_data = image._getexif() if hasattr(image, '_getexif') else None
+
+        if exif_data:
+            for tag_id, value in exif_data.items():
+                tag_name = TAGS.get(tag_id, tag_id)
+                if tag_name == 'DateTime':
+                    # EXIF date format: 'YYYY:MM:DD HH:MM:SS'
+                    date_str = str(value).split(' ')[0].replace(':', '-')
+                    return date_str
+    except Exception as e:
+        pass
+
+    return None
+
+
 def run_ocr(image_path: str) -> Dict[str, Optional[str]]:
     """
-    Run OCR on an image and extract serial number and meter reading.
-    Returns a dictionary with 'serial_number' and 'consumed_volume' keys.
+    Run OCR on an image and extract serial number, meter reading, and date.
+    Returns a dictionary with 'serial_number', 'consumed_volume', and 'date_measured' keys.
     """
     result = {
         'serial_number': None,
         'consumed_volume': None,
+        'date_measured': None,
         'error': None
     }
 
@@ -142,6 +168,11 @@ def run_ocr(image_path: str) -> Dict[str, Optional[str]]:
         if not os.path.isfile(image_path):
             result['error'] = f"Invalid file path: {image_path}"
             return result
+
+        # Extract date from image EXIF
+        image_date = extract_image_date(image_path)
+        if image_date:
+            result['date_measured'] = image_date
 
         try:
             img = cv2.imdecode(np.fromfile(image_path, dtype=np.uint8), cv2.IMREAD_COLOR)
@@ -163,6 +194,18 @@ def run_ocr(image_path: str) -> Dict[str, Optional[str]]:
             offline_mode=True
         )
 
+        # Wait for models to load (first load may take 2-5 minutes to download)
+        print("[OCR] Waiting for gauge detection model to load (this may take a while on first run)...")
+        if not obj_detection_model.wait_for_model_loaded(timeout=300):
+            result['error'] = "Gauge detection model failed to load"
+            return result
+
+        print("[OCR] Waiting for digit detection model to load...")
+        if not digit_detection_model.wait_for_model_loaded(timeout=300):
+            result['error'] = "Digit detection model failed to load"
+            return result
+
+        print("[OCR] Models loaded, processing image...")
         consumption_probe = obj_detection_model.getBBoxImage(img, "consumption")
         rotation = detect_rotation(consumption_probe)
         if rotation != 0:

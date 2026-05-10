@@ -77,27 +77,51 @@ class TechnicanOCRView(LoginRequiredMixin, generic.View):
         import tempfile
         import os
         import json
+        import time
         from django.http import JsonResponse
         from .ocr_service import run_ocr
 
         if 'image' not in request.FILES:
-            return JsonResponse({'error': 'No image provided'}, status=400)
+            return JsonResponse({'error': 'No image provided', 'serial_number': None, 'consumed_volume': None}, status=400)
 
         image_file = request.FILES['image']
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp:
-            for chunk in image_file.chunks():
-                tmp.write(chunk)
-            tmp_path = tmp.name
+        tmp_path = None
 
         try:
+            print(f"[OCR] Processing image: {image_file.name}")
+
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as tmp:
+                for chunk in image_file.chunks():
+                    tmp.write(chunk)
+                tmp_path = tmp.name
+
+            print(f"[OCR] Saved to temp file: {tmp_path}")
+
+            start_time = time.time()
             ocr_result = run_ocr(tmp_path)
+            elapsed = time.time() - start_time
+
+            print(f"[OCR] Completed in {elapsed:.2f}s")
+            print(f"[OCR] Result: {ocr_result}")
+
             return JsonResponse(ocr_result)
+        except Exception as e:
+            import traceback
+            error_msg = str(e)
+            traceback.print_exc()
+            print(f"[OCR] Error: {error_msg}")
+
+            return JsonResponse({
+                'error': error_msg,
+                'serial_number': None,
+                'consumed_volume': None
+            }, status=500)
         finally:
-            try:
-                os.unlink(tmp_path)
-            except:
-                pass
+            if tmp_path:
+                try:
+                    os.unlink(tmp_path)
+                except:
+                    pass
 
 
 class TechnicanMeasurementAddView(LoginRequiredMixin, generic.FormView):
@@ -107,7 +131,17 @@ class TechnicanMeasurementAddView(LoginRequiredMixin, generic.FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         gauge_pk = self.kwargs.get('gauge_pk')
-        context['gauge'] = models.Gauge.objects.get(pk=gauge_pk)
+        gauge = models.Gauge.objects.get(pk=gauge_pk)
+        context['gauge'] = gauge
+
+        if 'form' not in context:
+            initial_data = {}
+            if gauge.serial:
+                initial_data['serial_number'] = gauge.serial
+            if gauge.last_consumed:
+                initial_data['consumed'] = gauge.last_consumed
+            context['form'] = self.form_class(initial=initial_data)
+
         return context
 
     def form_valid(self, form):

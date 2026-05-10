@@ -70,6 +70,32 @@ class ObjDetection:
     def set_model_loaded_callback(self, callback):
         self._model_loaded_callback = callback
 
+    def wait_for_model_loaded(self, timeout: float = 60.0) -> bool:
+        """Wait for the model to finish loading. Returns True if loaded successfully."""
+        if not self.offline:
+            return True
+
+        print(f"[Model] Waiting for {self.model_id} (timeout: {timeout}s)...")
+
+        # Wait for the loading thread to complete
+        if hasattr(self, '_load_thread') and self._load_thread is not None:
+            self._load_thread.join(timeout=timeout)
+
+            if self._load_thread.is_alive():
+                print(f"[Model] Thread still running after {timeout}s timeout")
+
+        # Check if model loaded successfully
+        if self._local_model is not None:
+            print(f"[Model] Model ready: {self.model_id}")
+            return True
+
+        if self._local_model_failed:
+            print(f"[Model] Model failed to load: {self.model_id}")
+            return False
+
+        print(f"[Model] Model state unknown: {self.model_id}")
+        return False
+
     def Close(self):
         self._closing = True
         if hasattr(self, '_load_thread') and self._load_thread is not None:
@@ -89,13 +115,19 @@ class ObjDetection:
         self._is_loading = True
         try:
             from inference import get_model
+            print(f"[Model] Loading model: {self.model_id}")
             self._local_model = get_model(self.model_id, api_key=self.api_key)
+            print(f"[Model] Successfully loaded: {self.model_id}")
 
             if self._model_loaded_callback:
                 self._model_loaded_callback("VisionModel loaded")
         except Exception as e:
+            import traceback
             self._local_model = None
             self._local_model_failed = True
+            error_msg = str(e)
+            print(f"[Model] Failed to load {self.model_id}: {error_msg}")
+            traceback.print_exc()
 
             if self._model_loaded_callback:
                 self._model_loaded_callback("VisionModel failed")

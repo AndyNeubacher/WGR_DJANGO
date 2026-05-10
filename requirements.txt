@@ -5,4 +5,4 @@ numpy
 opencv-python
 pyzbar
 requests
-inference-sdk
+inference
