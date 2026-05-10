@@ -43,6 +43,19 @@
   </div>
 </div>
 
+<div class="row mb-3">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Zählerstand Verlauf</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="zaehlerstandChart" style="max-height: 300px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row">
   <div class="col-md-12">
     <div class="card">
@@ -63,7 +76,7 @@
               <tbody>
                 {% for measurement in measurements %}
                   <tr>
-                    <td>{{ measurement.date_measured|date:"d.m.Y" }}</td>
+                    <td>{{ measurement.date_measured|date:"d.m.Y H:i" }}</td>
                     <td>{{ measurement.consumed }} m³</td>
                     <td>{{ measurement.comments|default:"" }}</td>
                   </tr>
@@ -88,4 +101,42 @@
 <div class="mt-3">
   <a href="{% url 'technician_sites_list' %}" class="btn btn-secondary">Zurück zur Liste</a>
 </div>
+{% endblock %}
+
+{% block extrascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+  (function () {
+    var labels = {{ chart_labels|safe }};
+    var values = {{ chart_values|safe }};
+    if (!labels.length) return;
+    new Chart(document.getElementById('zaehlerstandChart'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Verbrauch (m³)',
+          data: values,
+          borderColor: 'rgba(0, 123, 255, 0.9)',
+          backgroundColor: 'rgba(0, 123, 255, 0.08)',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          fill: true,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(ctx) { return 'Verbrauch: ' + ctx.parsed.y + ' m³'; } } }
+        },
+        scales: {
+          x: { ticks: { maxRotation: 45, minRotation: 30 } },
+          y: { beginAtZero: false, title: { display: true, text: 'm³' } }
+        }
+      }
+    });
+  })();
+</script>
 {% endblock %}

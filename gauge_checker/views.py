@@ -1,3 +1,4 @@
+import json
 from django.views import generic
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -69,6 +70,17 @@ class TechnicanGaugesView(LoginRequiredMixin, generic.DetailView):
         context = super().get_context_data(**kwargs)
         gauge = self.get_object()
         context['measurements'] = models.Measurement.objects.filter(Images__isnull=False).order_by('-date_measured')
+
+        chart_qs = list(
+            models.Measurement.objects
+            .filter(Images__isnull=False, date_measured__isnull=False, consumed__isnull=False)
+            .order_by('date_measured')
+            .values_list('date_measured', 'consumed')
+        )
+        labels = [chart_qs[i][0].strftime('%d.%m.%Y') for i in range(1, len(chart_qs))]
+        deltas = [chart_qs[i][1] - chart_qs[i - 1][1] for i in range(1, len(chart_qs))]
+        context['chart_labels'] = json.dumps(labels)
+        context['chart_values'] = json.dumps(deltas)
         return context
 
 

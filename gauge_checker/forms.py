@@ -107,6 +107,12 @@ class MeasurementForm(forms.ModelForm):
             "consumed",
             "Images",
         ]
+        widgets = {
+            'date_measured': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M',
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
         super(MeasurementForm, self).__init__(*args, **kwargs)
@@ -163,13 +169,14 @@ class MeasurementUploadForm(forms.Form):
             'placeholder': 'Wird durch OCR gefüllt'
         })
     )
-    date_measured = forms.DateField(
+    date_measured = forms.DateTimeField(
         label='Messdatum',
         required=True,
-        widget=forms.DateInput(attrs={
-            'class': 'form-control',
-            'type': 'date'
-        })
+        input_formats=['%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M', '%Y-%m-%d %H:%M:%S'],
+        widget=forms.DateTimeInput(
+            attrs={'class': 'form-control', 'type': 'datetime-local'},
+            format='%Y-%m-%dT%H:%M',
+        )
     )
     consumed = forms.DecimalField(
         label='Zählerstand (m³) (OCR-Ergebnis - überprüfen)',

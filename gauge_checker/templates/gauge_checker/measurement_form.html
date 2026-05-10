@@ -15,8 +15,8 @@
   <div class="form-group row">
       <label class="col-sm-2 col-form-label" for="date_measured">date_measured: </label>
       <input class="form-control col-sm-10"
-         id="date_measured" type="date"
-         name="date_measured" value="{{ object.date_measured }}">
+         id="date_measured" type="datetime-local"
+         name="date_measured" value="{{ object.date_measured|date:'Y-m-d\TH:i' }}">
   </div>
   <div class="form-group row">
       <label class="col-sm-2 col-form-label" for="last_updated">last_updated: </label>

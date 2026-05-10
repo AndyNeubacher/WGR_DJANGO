@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'gauge_checker',
+    'gauge_checker.apps.GaugeCheckerConfig',
 ]
 
 

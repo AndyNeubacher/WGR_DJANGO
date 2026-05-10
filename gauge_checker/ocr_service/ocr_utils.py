@@ -18,6 +18,23 @@ ROBOFLOW_API_KEY = "hyav9bBDrlwRh16JGxo8"
 GAUGE_MODEL_ID = "watermeter-vtc1a/4"
 DIGIT_MODEL_ID = "gaugenumbers/2"
 
+_gauge_model: Optional['ObjDetection'] = None
+_digit_model: Optional['ObjDetection'] = None
+
+
+def preload_models() -> None:
+    """Start background loading of both OCR models. Safe to call multiple times."""
+    global _gauge_model, _digit_model
+    if _gauge_model is None:
+        _gauge_model = ObjDetection(api_key=ROBOFLOW_API_KEY, model_id=GAUGE_MODEL_ID, offline_mode=True)
+    if _digit_model is None:
+        _digit_model = ObjDetection(api_key=ROBOFLOW_API_KEY, model_id=DIGIT_MODEL_ID, offline_mode=True)
+
+
+def _get_models():
+    preload_models()
+    return _gauge_model, _digit_model
+
 
 def detect_rotation(image: np.ndarray) -> int:
     """
@@ -144,8 +161,10 @@ def extract_image_date(image_path: str) -> Optional[str]:
                 tag_name = TAGS.get(tag_id, tag_id)
                 if tag_name == 'DateTime':
                     # EXIF date format: 'YYYY:MM:DD HH:MM:SS'
-                    date_str = str(value).split(' ')[0].replace(':', '-')
-                    return date_str
+                    parts = str(value).split(' ')
+                    date_str = parts[0].replace(':', '-')
+                    time_str = parts[1][:5] if len(parts) > 1 else '00:00'
+                    return f"{date_str}T{time_str}"
     except Exception as e:
         pass
 
@@ -183,24 +202,12 @@ def run_ocr(image_path: str) -> Dict[str, Optional[str]]:
             result['error'] = "Could not load image"
             return result
 
-        obj_detection_model = ObjDetection(
-            api_key=ROBOFLOW_API_KEY,
-            model_id=GAUGE_MODEL_ID,
-            offline_mode=True
-        )
-        digit_detection_model = ObjDetection(
-            api_key=ROBOFLOW_API_KEY,
-            model_id=DIGIT_MODEL_ID,
-            offline_mode=True
-        )
+        obj_detection_model, digit_detection_model = _get_models()
 
-        # Wait for models to load (first load may take 2-5 minutes to download)
-        print("[OCR] Waiting for gauge detection model to load (this may take a while on first run)...")
         if not obj_detection_model.wait_for_model_loaded(timeout=300):
             result['error'] = "Gauge detection model failed to load"
             return result
 
-        print("[OCR] Waiting for digit detection model to load...")
         if not digit_detection_model.wait_for_model_loaded(timeout=300):
             result['error'] = "Digit detection model failed to load"
             return result
@@ -250,8 +257,6 @@ def run_ocr(image_path: str) -> Dict[str, Optional[str]]:
 
         result['serial_number'] = serial_number
         result['consumed_volume'] = consumed_volume
-        obj_detection_model.Close()
-        digit_detection_model.Close()
 
     except Exception as e:
         result['error'] = str(e)

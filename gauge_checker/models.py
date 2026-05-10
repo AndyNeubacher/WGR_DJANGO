@@ -167,7 +167,7 @@ class Measurement(models.Model):
     Images = models.ForeignKey("gauge_checker.Images", on_delete=models.CASCADE, related_name="measurements", null=True, blank=True)
 
     # Fields
-    date_measured = models.DateField(null=True, blank=True)
+    date_measured = models.DateTimeField(null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True, editable=False)
     comments = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True, editable=False)
