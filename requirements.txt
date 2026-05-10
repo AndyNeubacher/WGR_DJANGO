@@ -1,3 +1,8 @@
 Django>=5.0,<6.0
 djangorestframework
 Pillow
+numpy
+opencv-python
+pyzbar
+requests
+inference-sdk

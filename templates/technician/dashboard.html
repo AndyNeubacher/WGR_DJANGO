@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <h3>Techniker Dashboard</h3>
+    <p class="text-muted">Willkommen, {{ user.username }}! Wählen Sie eine Installation aus um zu beginnen.</p>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Installationen</h5>
+      </div>
+      <div class="card-body">
+        <a href="{% url 'technician_sites_list' %}" class="btn btn-primary">Alle Installationen anzeigen</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h6>Schnellstart</h6>
+      </div>
+      <div class="card-body">
+        <ul>
+          <li>Klicken Sie auf "Alle Installationen anzeigen"</li>
+          <li>Filtern Sie nach Gebiet (optional)</li>
+          <li>Wählen Sie eine Installation aus</li>
+          <li>Sehen Sie alle Wasserzähler und Messwerte</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h6>Statistiken</h6>
+      </div>
+      <div class="card-body">
+        <p>Gesamte Installationen: <strong>{{ sites.count }}</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -17,6 +17,13 @@ router.register("Site", api.SiteViewSet)
 router.register("Technican", api.TechnicanViewSet)
 
 urlpatterns = (
+    path("technician/login/", views.TechnicanLoginView.as_view(), name="technician_login"),
+    path("technician/dashboard/", views.TechnicanDashboardView.as_view(), name="technician_dashboard"),
+    path("technician/sites/", views.TechnicanSitesListView.as_view(), name="technician_sites_list"),
+    path("technician/site/<int:pk>/", views.TechnicanSiteDetailView.as_view(), name="technician_site_detail"),
+    path("technician/gauge/<int:pk>/", views.TechnicanGaugesView.as_view(), name="technician_gauge_detail"),
+    path("technician/gauge/<int:gauge_pk>/add-measurement/", views.TechnicanMeasurementAddView.as_view(), name="technician_add_measurement"),
+    path("technician/ocr/", views.TechnicanOCRView.as_view(), name="technician_ocr"),
     path("api/v1/", include(router.urls)),
     path("gauge_checker/Contact/", views.ContactListView.as_view(), name="gauge_checker_Contact_list"),
     path("gauge_checker/Contact/create/", views.ContactCreateView.as_view(), name="gauge_checker_Contact_create"),
@@ -63,5 +70,7 @@ urlpatterns = (
     path("gauge_checker/Technican/detail/<int:pk>/", views.TechnicanDetailView.as_view(), name="gauge_checker_Technican_detail"),
     path("gauge_checker/Technican/update/<int:pk>/", views.TechnicanUpdateView.as_view(), name="gauge_checker_Technican_update"),
     path("gauge_checker/Technican/delete/<int:pk>/", views.TechnicanDeleteView.as_view(), name="gauge_checker_Technican_delete"),
+    path("api/v1/auth/login/", api.TechnicanLoginView.as_view(), name="api_technican_login"),
+    path("api/v1/auth/me/", api.TechnicanMeView.as_view(), name="api_technican_me"),
 
 )

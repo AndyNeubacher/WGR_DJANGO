@@ -4,21 +4,32 @@
     <title>Django Builder - WGR</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    
+
     {% block extrahead %}{% endblock %}
   </head>
   <body>
     {% block allcontent %}
+    <nav class="navbar navbar-light bg-light mb-3">
+      <a class="navbar-brand" href="{% url 'index' %}">WGR</a>
+      <div>
+        {% if user.is_authenticated %}
+          <span class="mr-3">{{ user.username }}</span>
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'logout' %}">Abmelden</a>
+        {% else %}
+          <a class="btn btn-sm btn-primary" href="{% url 'login' %}">Anmelden</a>
+        {% endif %}
+      </div>
+    </nav>
     <div id="content" class="container">
       <h2>Home: <a href="{% url 'index' %}">WGR</a></h2>
       <div class="card">
         <div class="card-body">
-          
+
           <p class="card-text">{% block content %}{% endblock %}</p>
         </div>
       </div>
     </div>
-    
+
     {% endblock %}
   </body>
 </html>

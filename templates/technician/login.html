@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h3 class="mb-4">Techniker Anmeldung</h3>
+    <div class="card">
+      <div class="card-body">
+        <form method="post" class="form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="{{ form.username.id_for_label }}">Benutzername:</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+              <small class="form-text text-danger">{{ form.username.errors }}</small>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.password.id_for_label }}">Passwort:</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+              <small class="form-text text-danger">{{ form.password.errors }}</small>
+            {% endif %}
+          </div>
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+          <button type="submit" class="btn btn-primary btn-block">Anmelden</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

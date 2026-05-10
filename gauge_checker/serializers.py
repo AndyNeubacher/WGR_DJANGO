@@ -118,3 +118,17 @@ class TechnicanSerializer(serializers.ModelSerializer):
             "last_updated",
             "Name",
         ]
+
+class TechnicanMeSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = models.Technican
+        fields = [
+            "username",
+            "email",
+            "Name",
+            "created",
+            "last_updated",
+        ]

@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
 
 
 class Contact(models.Model):
@@ -218,6 +219,13 @@ class Site(models.Model):
 class Technican(models.Model):
 
     # Relationships
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='technican_profile',
+        null=True,
+        blank=True
+    )
     Name = models.ForeignKey("gauge_checker.Contact", on_delete=models.CASCADE, related_name="technicans", null=True, blank=True)
 
     # Fields

@@ -1,4 +1,8 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
 
 from . import serializers
 from . import models
@@ -74,3 +78,35 @@ class TechnicanViewSet(viewsets.ModelViewSet):
     queryset = models.Technican.objects.all()
     serializer_class = serializers.TechnicanSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class TechnicanLoginView(APIView):
+    """API endpoint for technician login - returns authentication token"""
+    permission_classes = []
+
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        if not username or not password:
+            return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = authenticate(username=username, password=password)
+        if not user:
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key, 'username': user.username})
+
+
+class TechnicanMeView(APIView):
+    """API endpoint to get current authenticated technician's profile"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        try:
+            profile = request.user.technican_profile
+        except models.Technican.DoesNotExist:
+            return Response({'error': 'No technician profile for this user'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = serializers.TechnicanMeSerializer(profile)
+        return Response(serializer.data)

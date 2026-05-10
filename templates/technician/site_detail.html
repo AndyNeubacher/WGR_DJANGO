@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row mb-3">
+  <div class="col-md-8">
+    <h3>Installation #{{ site.id }}</h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5>Installationsdetails</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">Adresse:</dt>
+          <dd class="col-sm-9">{{ site.address }}</dd>
+
+          <dt class="col-sm-3">Gebiet:</dt>
+          <dd class="col-sm-9">
+            {% if site.Group %}
+              <span class="badge badge-info">{{ site.Group.name }}</span>
+            {% else %}
+              <span class="badge badge-secondary">Nicht zugeordnet</span>
+            {% endif %}
+          </dd>
+
+          <dt class="col-sm-3">Standort:</dt>
+          <dd class="col-sm-9">
+            {% if site.Location %}
+              {{ site.Location.address }}
+              {% if site.Location.latitude and site.Location.longitude %}
+                <br><small class="text-muted">Koordinaten: {{ site.Location.latitude }}, {{ site.Location.longitude }}</small>
+              {% endif %}
+            {% else %}
+              Kein Standort zugeordnet
+            {% endif %}
+          </dd>
+
+          <dt class="col-sm-3">Kommentare:</dt>
+          <dd class="col-sm-9">{{ site.comments|default:"Keine Kommentare" }}</dd>
+
+          <dt class="col-sm-3">Erstellt:</dt>
+          <dd class="col-sm-9">{{ site.created|date:"d.m.Y H:i" }}</dd>
+
+          <dt class="col-sm-3">Zuletzt aktualisiert:</dt>
+          <dd class="col-sm-9">{{ site.last_updated|date:"d.m.Y H:i" }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5>Wasserzähler</h5>
+      </div>
+      <div class="card-body">
+        {% if site.Gauges %}
+          <p><strong>Wasserzähler #{{ site.Gauges.id }}</strong></p>
+          <dl class="row">
+            <dt class="col-sm-3">Seriennummer:</dt>
+            <dd class="col-sm-9">{{ site.Gauges.serial }}</dd>
+
+            <dt class="col-sm-3">Typ:</dt>
+            <dd class="col-sm-9">{{ site.Gauges.type }}</dd>
+
+            <dt class="col-sm-3">Status:</dt>
+            <dd class="col-sm-9">{{ site.Gauges.state }}</dd>
+
+            <dt class="col-sm-3">Installiert:</dt>
+            <dd class="col-sm-9">{{ site.Gauges.date_installed|date:"d.m.Y" }}</dd>
+
+            <dt class="col-sm-3">Kalibriert:</dt>
+            <dd class="col-sm-9">{{ site.Gauges.date_calibrated|date:"d.m.Y" }}</dd>
+
+            <dt class="col-sm-3">Verfällt:</dt>
+            <dd class="col-sm-9">{{ site.Gauges.date_expire|date:"d.m.Y" }}</dd>
+
+            <dt class="col-sm-3">Letzter Zählerstand:</dt>
+            <dd class="col-sm-9">{{ site.Gauges.last_consumed }} m³</dd>
+          </dl>
+          <a href="{% url 'technician_gauge_detail' site.Gauges.id %}" class="btn btn-info">
+            Messwerte anzeigen
+          </a>
+          <a href="{% url 'technician_add_measurement' site.Gauges.id %}" class="btn btn-success">
+            Messwert hinzufügen
+          </a>
+        {% else %}
+          <p class="text-muted">Kein Wasserzähler für diese Installation</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-3">
+  <a href="{% url 'technician_sites_list' %}" class="btn btn-secondary">Zurück zur Liste</a>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Wasserzähler #{{ gauge.id }} - Messwerte</h3>
+
+<div class="row mb-3">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5>Wasserzähler Details</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">Seriennummer:</dt>
+          <dd class="col-sm-9">{{ gauge.serial }}</dd>
+
+          <dt class="col-sm-3">Typ:</dt>
+          <dd class="col-sm-9">{{ gauge.type }}</dd>
+
+          <dt class="col-sm-3">Status:</dt>
+          <dd class="col-sm-9">
+            <span class="badge {% if gauge.state == 'aktiv' %}badge-success{% else %}badge-warning{% endif %}">
+              {{ gauge.state }}
+            </span>
+          </dd>
+
+          <dt class="col-sm-3">Installiert:</dt>
+          <dd class="col-sm-9">{{ gauge.date_installed|date:"d.m.Y" }}</dd>
+
+          <dt class="col-sm-3">Kalibriert:</dt>
+          <dd class="col-sm-9">{{ gauge.date_calibrated|date:"d.m.Y" }}</dd>
+
+          <dt class="col-sm-3">Verfällt:</dt>
+          <dd class="col-sm-9">{{ gauge.date_expire|date:"d.m.Y" }}</dd>
+
+          <dt class="col-sm-3">Letzter Verbrauch:</dt>
+          <dd class="col-sm-9">{{ gauge.last_consumed }} L</dd>
+
+          <dt class="col-sm-3">Anmerkungen:</dt>
+          <dd class="col-sm-9">{{ gauge.comments|default:"Keine" }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Messwerte</h5>
+      </div>
+      <div class="card-body">
+        {% if measurements %}
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th>Messdatum</th>
+                  <th>Zählerstand (m³)</th>
+                  <th>Kommentare</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for measurement in measurements %}
+                  <tr>
+                    <td>{{ measurement.date_measured|date:"d.m.Y" }}</td>
+                    <td>{{ measurement.consumed }} m³</td>
+                    <td>{{ measurement.comments|default:"" }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted">Keine Messwerte vorhanden</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mt-4">
+  <a href="{% url 'technician_add_measurement' gauge.id %}" class="btn btn-success btn-lg">
+    Messwert hinzufügen
+  </a>
+</div>
+
+<div class="mt-3">
+  <a href="{% url 'technician_sites_list' %}" class="btn btn-secondary">Zurück zur Liste</a>
+</div>
+{% endblock %}

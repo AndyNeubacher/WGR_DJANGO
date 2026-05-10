@@ -144,3 +144,50 @@ class TechnicanForm(forms.ModelForm):
         super(TechnicanForm, self).__init__(*args, **kwargs)
         self.fields["Name"].queryset = Contact.objects.all()
 
+
+class MeasurementUploadForm(forms.Form):
+    image = forms.ImageField(
+        label='Bild des Wasserzählers',
+        required=True,
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*',
+            'capture': 'environment'
+        })
+    )
+    serial_number = forms.CharField(
+        label='Seriennummer (OCR-Ergebnis - überprüfen)',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Wird durch OCR gefüllt'
+        })
+    )
+    date_measured = forms.DateField(
+        label='Messdatum',
+        required=True,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date'
+        })
+    )
+    consumed = forms.DecimalField(
+        label='Zählerstand (m³) (OCR-Ergebnis - überprüfen)',
+        required=False,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'min': '0',
+            'step': '0.01',
+            'placeholder': 'Wird durch OCR gefüllt'
+        })
+    )
+    comments = forms.CharField(
+        label='Kommentare',
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3
+        })
+    )
+

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Installationen (Wasserzähler Anlagen)</h3>
+
+<div class="row mb-3">
+  <div class="col-md-4">
+    <form method="get" class="form">
+      <div class="input-group">
+        <select name="group" class="form-control">
+          <option value="">-- Alle Gebiete --</option>
+          {% for group in groups %}
+            <option value="{{ group.id }}" {% if selected_group == group.id|stringformat:"d" %}selected{% endif %}>
+              {{ group.name }}
+            </option>
+          {% endfor %}
+        </select>
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="submit">Filtern</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if sites %}
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Installation</th>
+          <th>Adresse</th>
+          <th>Gebiet</th>
+          <th>Aktion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for site in sites %}
+          <tr>
+            <td><strong>Installation #{{ site.id }}</strong></td>
+            <td>{{ site.address }}</td>
+            <td>
+              {% if site.Group %}
+                <span class="badge badge-info">{{ site.Group.name }}</span>
+              {% else %}
+                <span class="badge badge-secondary">Kein Gebiet</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'technician_site_detail' site.id %}" class="btn btn-sm btn-info">
+                Details
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1&group={{ selected_group }}">Erste</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&group={{ selected_group }}">Zurück</a>
+          </li>
+        {% endif %}
+
+        <li class="page-item active">
+          <span class="page-link">Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}&group={{ selected_group }}">Weiter</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&group={{ selected_group }}">Letzte</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="alert alert-info">
+    Keine Installationen gefunden.
+  </div>
+{% endif %}
+
+<a href="{% url 'technician_dashboard' %}" class="btn btn-secondary mt-3">Zurück zum Dashboard</a>
+{% endblock %}
