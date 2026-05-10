@@ -21,11 +21,21 @@
           {% csrf_token %}
 
           <div class="form-group">
-            <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
-            {{ form.image }}
+            <label>{{ form.image.label }}</label>
+            <div class="mb-2">
+              <label for="{{ form.image.id_for_label }}" class="btn btn-primary btn-lg btn-block" style="cursor: pointer;">
+                📷 Foto aufnehmen / auswählen
+              </label>
+              <div style="display: none;">
+                {{ form.image }}
+              </div>
+            </div>
             <small class="form-text text-muted">
               Sie können ein Bild hochladen oder ein neues Foto mit der Kamera aufnehmen
             </small>
+            <div class="mt-2">
+              <img id="image-preview" src="#" alt="Vorschau" style="display: none; max-width: 100%; max-height: 300px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />
+            </div>
             <div id="ocr-loading" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
               <span class="visually-hidden">OCR wird ausgeführt...</span>
             </div>
@@ -143,6 +153,10 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
+  // Explicitly remove accept and capture attributes to prevent Android from defaulting to camera
+  imageInput.removeAttribute('accept');
+  imageInput.removeAttribute('capture');
+
   imageInput.addEventListener('change', function(e) {
     const fileInput = e.target;
     const file = fileInput.files[0];
@@ -150,6 +164,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!file) return;
 
     console.log('Selected file:', file.name);
+
+    // Image preview
+    const reader = new FileReader();
+    const previewImg = document.getElementById('image-preview');
+    reader.onload = function(e) {
+      if (previewImg) {
+        previewImg.src = e.target.result;
+        previewImg.style.display = 'block';
+      }
+    }
+    reader.readAsDataURL(file);
 
     const formData = new FormData();
     formData.append('image', file);
